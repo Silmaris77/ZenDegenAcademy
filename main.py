@@ -90,6 +90,36 @@ button[kind="secondary"]:hover {
     color: white !important;
     background-color: var(--primary-color) !important;
 }
+
+/* Style poprawiające responsywność na urządzeniach mobilnych */
+@media (max-width: 768px) {
+    /* Zwiększenie obszaru klikalnego dla elementów rozwijanego menu */
+    .st-expander {
+        padding: 10px 0;
+    }
+    
+    /* Zwiększenie rozmiaru czcionki w rozwijanym menu */
+    .st-expander .st-expander-header {
+        font-size: 1.2rem !important;
+        padding: 15px 10px !important;
+    }
+    
+    /* Zapewnienie wystarczającej przestrzeni dla zawartości rozwijanej */
+    .st-expander .st-expander-content {
+        padding: 12px !important;
+    }
+    
+    /* Dodanie wyraźnego wskaźnika dotyku */
+    .st-expander .st-expander-header:after {
+        content: '▼';
+        margin-left: 8px;
+        font-size: 0.8rem;
+    }
+    
+    .st-expander.st-expander-expanded .st-expander-header:after {
+        content: '▲';
+    }
+}
 </style>
 """, unsafe_allow_html=True)
 

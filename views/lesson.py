@@ -391,12 +391,9 @@ def show_lesson():
                 st.error("Sekcja 'learning' nie zawiera klucza 'sections'!")
             else:
                 # Sprawdź, czy sekcja learning istnieje i czy zawiera sections
-                for section in lesson["sections"]["learning"]["sections"]:
-                    content_section(
-                        section.get("title", "Tytuł sekcji"), 
-                        section.get("content", "Brak treści"), 
-                        collapsed=True
-                    )
+                for i, section in enumerate(lesson["sections"]["learning"]["sections"]):
+                    with st.expander(section.get("title", f"Sekcja {i+1}"), expanded=False):
+                        st.markdown(section.get("content", "Brak treści"), unsafe_allow_html=True)
     
             # Przycisk "Dalej" po treści lekcji
             st.markdown("<div class='next-button'>", unsafe_allow_html=True)
@@ -816,3 +813,60 @@ def display_quiz(quiz_data):
     
     # Quiz nie jest jeszcze ukończony
     return is_completed, False, 0
+
+# Dodaj CSS do poprawy wyglądu expanderów, z uwzględnieniem urządzeń mobilnych
+st.markdown("""
+<style>
+/* Style dla expanderów */
+.st-emotion-cache-1oe5cao {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    background-color: rgba(248,249,251,0.8);
+}
+.st-emotion-cache-1oe5cao:hover {
+    background-color: rgba(242,244,248,1); 
+}
+.st-emotion-cache-16idsys p {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+.st-expander {
+    border: none !important;
+}
+
+/* Specjalne style dla urządzeń mobilnych */
+@media (max-width: 768px) {
+    /* Większy obszar klikalny dla expanderów */
+    .st-expander {
+        margin-bottom: 12px;
+    }
+    
+    .st-expander .st-emotion-cache-16idsys p {
+        font-size: 0.95rem; /* Nieco mniejsza czcionka na małych ekranach */
+    }
+    
+    /* Zwiększony obszar kliknięcia dla nagłówka expandera */
+    .st-expander-header {
+        padding: 15px 10px !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        min-height: 50px;
+    }
+    
+    /* Dodaj wskaźnik rozwijania */
+    .st-expander:not(.st-emotion-cache-xujm5h) .st-expander-header::after {
+        content: '▼';
+        float: right;
+        margin-left: 10px;
+        transition: transform 0.3s;
+    }
+    
+    .st-expander.st-emotion-cache-xujm5h .st-expander-header::after {
+        content: '▲';
+        float: right;
+        margin-left: 10px;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
