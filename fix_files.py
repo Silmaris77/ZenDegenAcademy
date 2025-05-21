@@ -1,4 +1,9 @@
-import streamlit as st
+# This script will create properly formatted versions of main.py and shop.py
+
+import os
+
+# Define the content for main.py
+main_py_content = '''import streamlit as st
 import os
 import sys
 import traceback
@@ -23,12 +28,10 @@ try:
     from views.profile import show_profile
     from views.degen_explorer import show_degen_explorer
     from views.skills_new import show_skill_tree
-    
     # Import shop module is done within the routing section
 except Exception as e:
     st.error(f"Błąd podczas importowania modułów: {str(e)}")
     st.code(traceback.format_exc())
-    st.stop()  # Stop execution if imports fail
 
 # Załaduj plik CSS
 def load_css(css_file):
@@ -60,21 +63,21 @@ def main():
                 
     # Page routing
     if not st.session_state.logged_in:
-        show_login_page()    
+        show_login_page()
     else:
-        if st.session_state.page == 'dashboard':
+        if st.session_state.page == "dashboard":
             show_dashboard()
-        elif st.session_state.page == 'degen_test':
+        elif st.session_state.page == "degen_test":
             show_degen_test()
-        elif st.session_state.page == 'lesson':
+        elif st.session_state.page == "lesson":
             show_lesson()
-        elif st.session_state.page == 'profile':
+        elif st.session_state.page == "profile":
             show_profile()
-        elif st.session_state.page == 'degen_explorer':
+        elif st.session_state.page == "degen_explorer":
             show_degen_explorer()
-        elif st.session_state.page == 'skills':
+        elif st.session_state.page == "skills":
             show_skill_tree()
-        elif st.session_state.page == 'shop':
+        elif st.session_state.page == "shop":
             try:
                 # Direct import to ensure we only use the new shop
                 import views.shop_new
@@ -138,17 +141,51 @@ button[kind="secondary"]:hover {
     
     /* Dodanie wyraźnego wskaźnika dotyku */
     .st-expander .st-expander-header:after {
-        content: '▼';
+        content: "▼";
         margin-left: 8px;
         font-size: 0.8rem;
     }
     
     .st-expander.st-expander-expanded .st-expander-header:after {
-        content: '▲';
+        content: "▲";
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    main()
+    main()'''
+
+# Define the content for shop.py
+shop_py_content = '''import streamlit as st
+
+# Uproszczona wersja sklepu - jedynie do kompatybilności wstecznej
+# Właściwa implementacja znajduje się w shop_new.py
+
+def show_shop():
+    """
+    Wyświetla sklep z przedmiotami do zakupu.
+    UWAGA: Ta wersja jest przestarzała - używamy shop_new.py
+    """
+    # Import and use shop_new.py implementation
+    try:
+        import views.shop_new
+        views.shop_new._IS_SHOP_NEW_LOADED = False  # Reset flag each time
+        from views.shop_new import show_shop as show_shop_new
+        show_shop_new()
+    except Exception as e:
+        st.error(f"Błąd podczas ładowania nowego sklepu: {e}")'''
+
+# Create the fixed versions
+base_path = r'c:\Users\Anna\Dropbox\Maverick\ZenDegenAcademy'
+
+# Backup and create main.py
+with open(os.path.join(base_path, 'main.py.final_fix'), 'w') as f:
+    f.write(main_py_content)
+
+# Backup and create shop.py
+with open(os.path.join(base_path, 'views', 'shop.py.final_fix'), 'w') as f:
+    f.write(shop_py_content)
+
+print("Fixed files created: main.py.final_fix and views/shop.py.final_fix")
+print("Please rename them to main.py and views/shop.py respectively.")

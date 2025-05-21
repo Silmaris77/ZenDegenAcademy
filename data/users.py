@@ -5,13 +5,15 @@ from datetime import datetime
 
 def save_user_data(users_data):
     """Save user data to JSON file"""
-    with open('users_data.json', 'w') as f:
+    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'users_data.json')
+    with open(file_path, 'w') as f:
         json.dump(users_data, f)
 
 def load_user_data():
     """Load user data from JSON file"""
-    if os.path.exists('users_data.json'):
-        with open('users_data.json', 'r') as f:
+    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'users_data.json')
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
             return json.load(f)
     return {}
 
