@@ -25,11 +25,18 @@ def plot_radar_chart(scores, device_type=None):
     if device_type is None:
         device_type = get_device_type()
         
+    # ZMIANA: Upewnij się, że labels i values są listami o tym samym rozmiarze
     labels = list(scores.keys())
-    values = list(scores.values())
-    values.append(values[0])  # Bezpieczne zawijanie wielokąta
-    angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-    angles.append(angles[0])  # Bezpieczne zawijanie wielokąta
+    values = [float(v) for v in scores.values()]
+    
+    # ZMIANA: Utwórz kąty i od razu skonwertuj na stopnie
+    num_vars = len(labels)
+    angles_degrees = np.linspace(0, 360, num_vars, endpoint=False)
+    angles_radians = np.radians(angles_degrees)
+    
+    # ZMIANA: Tworzenie zamkniętych list bez używania wycinków [:-1]
+    values_closed = np.concatenate((values, [values[0]]))
+    angles_radians_closed = np.concatenate((angles_radians, [angles_radians[0]]))
     
     # Użyj funkcji helper do ustalenia rozmiaru wykresu
     fig_size = get_responsive_figure_size(device_type)
@@ -64,8 +71,8 @@ def plot_radar_chart(scores, device_type=None):
         ax.set_facecolor('#f8f8f8')
     
     # Plot the radar chart with marker size adjusted for device
-    ax.plot(angles, values, 'o-', linewidth=line_width, markersize=marker_size)
-    ax.fill(angles, values, alpha=0.25)
+    ax.plot(angles_radians_closed, values_closed, 'o-', linewidth=line_width, markersize=marker_size)
+    ax.fill(angles_radians_closed, values_closed, alpha=0.25)
     
     # Ensure we have a valid limit
     max_val = max(values) if max(values) > 0 else 1
@@ -76,10 +83,10 @@ def plot_radar_chart(scores, device_type=None):
     # For mobile, rotate labels to fit better on small screens
     if device_type == 'mobile':
         # Use shorter labels on mobile
-        ax.set_thetagrids(np.degrees(angles[:-1]), labels, fontsize=font_size-1)
+        ax.set_thetagrids(angles_degrees, labels, fontsize=font_size-1)
         plt.setp(ax.get_xticklabels(), rotation=67.5)  # Rotate labels for better fit
     else:
-        ax.set_thetagrids(np.degrees(angles[:-1]), labels, fontsize=font_size)
+        ax.set_thetagrids(angles_degrees, labels, fontsize=font_size)
     
     # Set title with responsive size
     ax.set_title("Twój profil inwestycyjny", size=title_size, pad=20)
@@ -90,8 +97,9 @@ def plot_radar_chart(scores, device_type=None):
     # Dodaj etykiety z wartościami
     # Dostosuj odległość etykiet od wykresu
     label_pad = max_val * (0.05 if device_type == 'mobile' else 0.1)
-    
-    for i, (angle, value) in enumerate(zip(angles[:-1], values[:-1])):
+
+    # Poprawiona wersja:
+    for i, (angle, value) in enumerate(zip(angles_radians, values)):
         color = DEGEN_TYPES[labels[i]]["color"]
         
         # Na telefonach wyświetl tylko nazwę typu bez wyniku
