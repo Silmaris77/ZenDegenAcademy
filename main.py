@@ -1,5 +1,11 @@
 import streamlit as st
 import os
+from config.settings import PAGE_CONFIG
+
+# Ta funkcja musi być wywołana jako pierwsza funkcja Streamlit
+st.set_page_config(**PAGE_CONFIG)
+
+# Pozostały import
 from utils.session import init_session_state, clear_session
 from utils.components import zen_header, navigation_menu
 from views.login import show_login_page
@@ -9,10 +15,6 @@ from views.lesson import show_lesson
 from views.profile import show_profile
 from views.degen_explorer import show_degen_explorer
 from views.skills_new import show_skill_tree  # Zaktualizowane na nowy interfejs skills
-from config.settings import PAGE_CONFIG
-
-# Configure the page and hide page names in sidebar
-st.set_page_config(**PAGE_CONFIG)
 
 # Załaduj plik CSS
 def load_css(css_file):
