@@ -637,78 +637,17 @@ def embed_content(url, width="100%", height="600px", title=None):
     st.markdown(embed_html, unsafe_allow_html=True)
 
 def add_animations_css():
+    """Dodaje animacje CSS bez używania jQuery"""
     st.markdown("""
     <style>
-    /* Animacje */
+    /* Animacje używające czystego CSS zamiast jQuery */
     @keyframes fadeIn {
-        0% { opacity: 0; transform: translateY(20px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideInRight {
-        0% { opacity: 0; transform: translateX(30px); }
-        100% { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-    .fadeIn {
-        animation: fadeIn 0.6s ease forwards;
-    }
-    .slideInRight {
-        animation: slideInRight 0.5s ease forwards;
-    }
-    .pulse {
-        animation: pulse 2s ease infinite;
-    }
-    .delay-1 {
-        animation-delay: 0.1s;
-    }
-    .delay-2 {
-        animation-delay: 0.2s;
-    }
-    .delay-3 {
-        animation-delay: 0.3s;
-    }
-    .tab-content {
-        animation: fadeIn 0.6s ease forwards;
+        0% { opacity: 0; }
+        100% { opacity: 1; }
     }
     
-    /* Style dla odznak */
-    .degen-card-badge-item {
-        display: inline-block;
-        margin-right: 5px;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 500;
-        background-color: #f0f0f0;
-        color: #666;
-    }
-    .badge-xp {
-        background-color: #FFD700;
-        color: #333;
-    }
-    .badge-difficulty-beginner {
-        background-color: #27ae60;
-        color: white;
-    }
-    .badge-difficulty-intermediate {
-        background-color: #f39c12;
-        color: white;
-    }
-    .badge-difficulty-advanced {
-        background-color: #e74c3c;
-        color: white;
-    }
-    .badge-time {
-        background-color: #3498db;
-        color: white;
-    }
-    .badge-tag {
-        background-color: #9b59b6;
-        color: white;
+    .fadeIn {
+        animation: fadeIn 0.5s ease-in;
     }
     </style>
     """, unsafe_allow_html=True)
