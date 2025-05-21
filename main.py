@@ -23,6 +23,7 @@ try:
     from views.profile import show_profile
     from views.degen_explorer import show_degen_explorer
     from views.skills_new import show_skill_tree
+    from views.admin import show_admin_dashboard
     
     # Import shop module is done within the routing section
 except Exception as e:
@@ -85,6 +86,8 @@ def main():
                 st.error(f"Błąd podczas ładowania sklepu: {e}")
                 import traceback
                 st.code(traceback.format_exc())
+        elif st.session_state.get('page') == 'admin':
+            show_admin_dashboard()
 
 st.markdown("""
 <style>

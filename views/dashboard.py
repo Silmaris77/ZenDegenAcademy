@@ -429,3 +429,11 @@ def show_dashboard():
     if zen_button("Przejdź do drzewa umiejętności", key="goto_skills"):
         st.session_state.page = "skills"
         st.rerun()
+
+    # Admin button for admin users
+    admin_users = ["admin", "zenmaster"]  # Lista administratorów
+    if st.session_state.get('username') in admin_users:
+        st.markdown("---")
+        if zen_button("🛡️ Panel administratora", key="admin_panel"):
+            st.session_state.page = 'admin'
+            st.rerun()
