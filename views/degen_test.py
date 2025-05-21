@@ -27,9 +27,9 @@ def plot_radar_chart(scores, device_type=None):
         
     labels = list(scores.keys())
     values = list(scores.values())
-    values += values[:1]  # Close the polygon
+    values.append(values[0])  # Bezpieczne zawijanie wielokąta
     angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-    angles += angles[:1]  # Close the polygon
+    angles.append(angles[0])  # Bezpieczne zawijanie wielokąta
     
     # Użyj funkcji helper do ustalenia rozmiaru wykresu
     fig_size = get_responsive_figure_size(device_type)
@@ -243,8 +243,8 @@ def show_degen_test():
         
         # Progress bar
         progress_value = st.session_state.test_step / len(TEST_QUESTIONS)
-        progress_bar(value=st.session_state.test_step, max_value=len(TEST_QUESTIONS), 
-                    label=f"Postęp testu: {int(progress_value * 100)}%")
+        progress_bar(progress=progress_value, color="#4CAF50")  # Poprawione wywołanie funkcji
+        st.markdown(f"**Postęp testu: {int(progress_value * 100)}%**")  # Etykieta jako oddzielny element
         st.markdown("</div>", unsafe_allow_html=True)
     
     else:
@@ -337,8 +337,6 @@ def show_degen_test():
             st.session_state.show_test_info = True
             st.rerun()
             
-        st.markdown("</div>", unsafe_allow_html=True)
-        
         if zen_button("Przejdź do dashboardu"):
             st.session_state.test_step = 0
             st.session_state.page = 'dashboard'

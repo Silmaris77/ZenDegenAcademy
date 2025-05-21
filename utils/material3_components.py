@@ -488,7 +488,13 @@ def m3_text_field(label, value="", key=None, type="text", help=None):
     </div>
     """, unsafe_allow_html=True)
     
-    result = st.text_input("", value=value, key=field_key, type=type)
+    if type == "password":
+        result = st.text_input("", key=field_key, type="password")
+    else:
+        result = st.text_input("", key=field_key)
+
+    if value:  # Jeśli wartość jest określona, ustaw ją po inicjalizacji
+        st.session_state[field_key] = value
     
     if help:
         st.markdown(f'<div class="m3-text-field-help">{help}</div>', unsafe_allow_html=True)
