@@ -254,7 +254,8 @@ def navigation_menu():
         {"id": "dashboard", "name": "Dashboard", "icon": "🏠"},
         {"id": "degen_test", "name": "Test degena", "icon": "🧪"},
         {"id": "lesson", "name": "Lekcje", "icon": "📚"},
-        {"id": "skills", "name": "Umiejętności", "icon": "🌳"},  # Dodaj tę linię
+        {"id": "skills", "name": "Umiejętności", "icon": "🌳"},
+        {"id": "shop", "name": "Sklep", "icon": "🛒"},
         {"id": "degen_explorer", "name": "Eksplorator", "icon": "🔍"},
         {"id": "profile", "name": "Profil", "icon": "👤"}
     ]

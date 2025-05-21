@@ -34,6 +34,12 @@ from utils.goals import (
     get_user_goals,
     calculate_goal_metrics
 )
+from utils.inventory import (
+    activate_item,
+    get_user_inventory,
+    is_booster_active,
+    format_time_remaining
+)
 from config.settings import USER_AVATARS, THEMES, DEGEN_TYPES, BADGES
 from data.degen_details import degen_details
 from views.degen_test import plot_radar_chart
@@ -83,8 +89,7 @@ def show_profile():
     next_level_xp = xp + xp_needed  # Estimated XP for next level
     
     # Display user stats using the component
-    user_stats_panel(
-        username=st.session_state.username,
+    user_stats_panel(        username=st.session_state.username,
         avatar=avatar,
         degen_type=degen_type,
         level=level,
@@ -96,7 +101,7 @@ def show_profile():
     st.markdown("</div>", unsafe_allow_html=True)
     
     # Main Profile Tabs
-    tab1, tab3, tab4 = st.tabs(["Personalizacja", "Odznaki", "Typ Degena"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Personalizacja", "Ekwipunek", "Odznaki", "Typ Degena"])
     
     # Tab 1: Personalization
     with tab1:
@@ -193,6 +198,159 @@ def show_profile():
                     st.rerun()
             
             st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Tab 2: Inventory/Equipment
+    with tab2:
+        st.markdown("<div class='profile-tab-content'>", unsafe_allow_html=True)
+        
+        # Load user inventory
+        inventory = get_user_inventory(st.session_state.username)
+        
+        # Create subtabs for different inventory categories
+        inv_tabs = st.tabs(["Awatary", "Tła", "Specjalne Lekcje", "Boostery"])
+        
+        # Tab for Avatars
+        with inv_tabs[0]:
+            st.subheader("Twoje Awatary")
+            
+            if inventory['avatars']:
+                # Create a grid of avatars
+                avatar_cols = st.columns(4)
+                
+                for i, avatar_id in enumerate(inventory['avatars']):
+                    if avatar_id in USER_AVATARS:
+                        with avatar_cols[i % 4]:
+                            st.markdown(f"""
+                            <div style="text-align: center; padding: 10px;">
+                                <div style="font-size: 3rem; margin-bottom: 5px;">{USER_AVATARS[avatar_id]}</div>
+                                <div style="font-size: 0.9rem;">{avatar_id.replace('_', ' ').title()}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            # Add a button to activate this avatar
+                            if st.button(f"Aktywuj {avatar_id.title()}", key=f"activate_avatar_{avatar_id}"):
+                                success, message = activate_item(st.session_state.username, 'avatar', avatar_id)
+                                if success:
+                                    notification(message, type="success")
+                                    st.rerun()
+                                else:
+                                    notification(message, type="error")
+            else:
+                st.info("Nie posiadasz żadnych awatarów. Kup je w sklepie!")
+                if st.button("Przejdź do sklepu", key="go_to_shop_avatars"):
+                    st.session_state.page = 'shop'
+                    st.rerun()
+        
+        # Tab for Backgrounds
+        with inv_tabs[1]:
+            st.subheader("Twoje Tła")
+            
+            if inventory['backgrounds']:
+                # Create a grid of backgrounds
+                bg_cols = st.columns(2)
+                
+                for i, bg_id in enumerate(inventory['backgrounds']):
+                    with bg_cols[i % 2]:
+                        st.markdown(f"""
+                        <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 10px;">
+                            <div style="font-size: 2rem; margin-bottom: 5px;">🖼️</div>
+                            <div style="font-size: 1rem; font-weight: bold;">{bg_id.replace('_', ' ').title()}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        # Add a button to activate this background
+                        if st.button(f"Aktywuj {bg_id.title()}", key=f"activate_bg_{bg_id}"):
+                            success, message = activate_item(st.session_state.username, 'background', bg_id)
+                            if success:
+                                notification(message, type="success")
+                                st.rerun()
+                            else:
+                                notification(message, type="error")
+            else:
+                st.info("Nie posiadasz żadnych teł. Kup je w sklepie!")
+                if st.button("Przejdź do sklepu", key="go_to_shop_bgs"):
+                    st.session_state.page = 'shop'
+                    st.rerun()
+        
+        # Tab for Special Lessons
+        with inv_tabs[2]:
+            st.subheader("Twoje Specjalne Lekcje")
+            
+            if inventory['special_lessons']:
+                # Display special lessons
+                for lesson_id in inventory['special_lessons']:
+                    with st.container():
+                        st.markdown(f"""
+                        <div style="padding: 15px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="font-size: 2rem; margin-right: 15px;">📚</div>
+                                <div>
+                                    <div style="font-size: 1.2rem; font-weight: bold;">{lesson_id.replace('_', ' ').title()}</div>
+                                    <div style="font-size: 0.9rem; color: #666;">Specjalna lekcja dostępna do odblokowania</div>
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        # Add a button to unlock this special lesson
+                        if st.button(f"Odblokuj lekcję", key=f"unlock_lesson_{lesson_id}"):
+                            success, message = activate_item(st.session_state.username, 'special_lesson', lesson_id)
+                            if success:
+                                notification(message, type="success")
+                                st.rerun()
+                            else:
+                                notification(message, type="error")
+            else:
+                st.info("Nie posiadasz żadnych specjalnych lekcji. Kup je w sklepie!")
+                if st.button("Przejdź do sklepu", key="go_to_shop_lessons"):
+                    st.session_state.page = 'shop'
+                    st.rerun()
+        
+        # Tab for Boosters
+        with inv_tabs[3]:
+            st.subheader("Twoje Boostery")
+            
+            if inventory['boosters']:
+                # Display active boosters
+                for booster_id, booster_data in inventory['boosters'].items():
+                    is_active, expiration = is_booster_active(st.session_state.username, booster_id)
+                    status = "Aktywny" if is_active else "Nieaktywny"
+                    status_color = "#4CAF50" if is_active else "#F44336"
+                    
+                    # Format time remaining
+                    time_remaining = format_time_remaining(expiration) if is_active else "Wygasł"
+                    
+                    st.markdown(f"""
+                    <div style="padding: 15px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="font-size: 2rem; margin-right: 15px;">⚡</div>
+                                <div>
+                                    <div style="font-size: 1.2rem; font-weight: bold;">{booster_id.replace('_', ' ').title()}</div>
+                                    <div style="font-size: 0.9rem; color: #666;">{time_remaining}</div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.9rem; font-weight: bold; color: {status_color};">{status}</div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Add button to reactivate if not active
+                    if not is_active:
+                        if st.button(f"Reaktywuj {booster_id.replace('_', ' ').title()}", key=f"reactivate_booster_{booster_id}"):
+                            success, message = activate_item(st.session_state.username, 'booster', booster_id)
+                            if success:
+                                notification(message, type="success")
+                                st.rerun()
+                            else:
+                                notification(message, type="error")
+            else:
+                st.info("Nie posiadasz żadnych boosterów. Kup je w sklepie!")
+                if st.button("Przejdź do sklepu", key="go_to_shop_boosters"):
+                    st.session_state.page = 'shop'
+                    st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
     

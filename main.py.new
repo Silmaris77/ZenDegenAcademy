@@ -23,12 +23,15 @@ try:
     from views.profile import show_profile
     from views.degen_explorer import show_degen_explorer
     from views.skills_new import show_skill_tree
-    
-    # Import shop module is done within the routing section
+    try:
+        from views.shop_new import show_shop  # Używamy nowej wersji sklepu
+    except ImportError:
+        def show_shop():
+            st.title("Sklep 🛒")
+            st.error("Sklep jest obecnie niedostępny. Spróbuj ponownie później.")
 except Exception as e:
     st.error(f"Błąd podczas importowania modułów: {str(e)}")
     st.code(traceback.format_exc())
-    st.stop()  # Stop execution if imports fail
 
 # Załaduj plik CSS
 def load_css(css_file):
@@ -60,7 +63,7 @@ def main():
                 
     # Page routing
     if not st.session_state.logged_in:
-        show_login_page()    
+        show_login_page()
     else:
         if st.session_state.page == 'dashboard':
             show_dashboard()
@@ -76,11 +79,9 @@ def main():
             show_skill_tree()
         elif st.session_state.page == 'shop':
             try:
-                # Direct import to ensure we only use the new shop
-                import views.shop_new
-                views.shop_new._IS_SHOP_NEW_LOADED = False  # Reset flag each time
-                from views.shop_new import show_shop
+                st.write("Ładowanie sklepu...")
                 show_shop()
+                st.write("Sklep załadowany pomyślnie!")
             except Exception as e:
                 st.error(f"Błąd podczas ładowania sklepu: {e}")
                 import traceback
